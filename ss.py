@@ -1,10 +1,12 @@
 import sys
 import re as regex
 import socket
+import random
+import threading
 
 def setup():
     global PORT
-    if len(sys.argv) == 3: 
+    if len(sys.argv) == 3:
         if sys.argv[1] != "-p":
             print("\nUSAGE\n\tpython3 ss.py -p <PORT>\n\t\t<PORT> - (Optional) Allowed port number.\n")
             sys.exit(-1)
@@ -14,32 +16,33 @@ def setup():
         print("Port was outside of allowed port range. Exiting...")
         sys.exit(-1)
     elif len(sys.argv) == 1:
-        PORT = None
+        PORT = 888
         return
     else:
         print("\nUSAGE\n\tpython3 ss.py -p <PORT>\n\t\t<PORT> - (Optional) Allowed port number.\n")
         sys.exit(-1)
+
+
+
+
+
 
 # Main method
 def main():
     setup()
 
     print("ss {}, {}".format(socket.gethostname(), PORT))
-    # print(socket.gethostname(), ", ", PORT) # TODO is this fuckin uhhhhhhh the right one?
-
-
-    # get a random number in the apropriate range
-    pair_index = random.randrange(len(chains.entries))
-    pair = chains.entries[pair_index]
 
     # TIME DO DO SOME SOCKET PROGRAMMING HELL YEEEE
-    listen_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # bind to the host name and port
-    listen_socket.bind((socket.gethostname(), int(pair[1])))
+    listen_socket.bind((socket.gethostname(), int(PORT)))
     # set socket into listen mode
     listen_socket.listen(1)
     # create while loop to wait around for connection
-    
+
+    while 1:
+        c, addy = listen_socket.accept()
 
 
 

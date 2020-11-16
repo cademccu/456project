@@ -39,15 +39,15 @@ def setup():
         chainfilename = sys.argv[3]
     return
 
-    
+
 
 # Main method
 def main():
-    
+
     setup()
 
-    try: 
-        chains_file = open(chainfilename, "r") 
+    try:
+        chains_file = open(chainfilename, "r")
     except FileNotFoundError:
         print("\nThe chainfile [ ", chainfilename, " ] could not be opened. Exiting...\n")
         sys.exit()
@@ -61,13 +61,13 @@ def main():
     print("\tchainlist is")
     for pair in chains.entries:
         print("\t{}, {}".format(pair[0],pair[1]))
-    
+
     # get a random number in the apropriate range
     pair_index = random.randrange(len(chains.entries))
     pair = chains.entries[pair_index]
 
     # TIME DO DO SOME SOCKET PROGRAMMING HELL YEEEE
-    out_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    out_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # bind to the host name and port
     out_socket.bind((socket.gethostname(), int(pair[1])))
     # set socket into listen mode
