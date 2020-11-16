@@ -24,7 +24,8 @@ def setup():
 
 
 
-
+def threadedConnection(connection, address):
+    print(connnection, address)
 
 
 # Main method
@@ -44,6 +45,10 @@ def main():
     while 1:
         c, addy = listen_socket.accept()
 
+    try:
+        thread.start_new_thread(threadedConnection,(c,addy))
+    except:
+        print("YOU DID SOMETIN WRONG BOI")
 
 
     # close socket
