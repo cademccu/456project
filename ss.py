@@ -108,13 +108,19 @@ def main():
     # TIME DO DO SOME SOCKET PROGRAMMING HELL YEEEE
     listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # bind to the host name and port
-    listen_socket.bind((socket.gethostname(), int(PORT)))
+    # listen_socket.bind((socket.gethostname(), int(PORT)))
+    # listen_socket.bind((socket.gethostbyname(socket.gethostname()), int(PORT)))
+    listen_socket.bind(("127.0.0.1", int(PORT)))
+
     # set socket into listen mode
     listen_socket.listen(1)
     # create while loop to wait around for connection
 
-    while 1:
-        c, addy = listen_socket.accept()
+    #while 1:
+    c, addy = listen_socket.accept()
+
+    test = c.recv(1024)
+    print(test)
 
     try:
         thread.start_new_thread(threadedConnection,(c,addy))
