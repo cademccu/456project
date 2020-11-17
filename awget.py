@@ -44,10 +44,10 @@ def setup():
 # and encodes it into a binary 'packet' to be transmitted
 # The 'packet' can then be unpacked by using '.decode' on
 # this part of the actual packet, reading the count into
-# a python integer, and through 2 series of '.split' 
+# a python integer, and through 2 series of '.split'
 # retrieve the rest of the list.
 def encode_chains(chains):
-    # pack the count of <address, port> pairs 
+    # pack the count of <address, port> pairs
     b_count = struct.pack("h", int(chains.num_entries))
 
     b_string = ""
@@ -80,7 +80,7 @@ def decode_data(data):
     raw_values = raw_string.split("|")
     raw_values.pop()
 
-    # sanity check 
+    # sanity check
     if len(raw_values) != count:
         print("Something went wrong!")
         print("count:      ", count)

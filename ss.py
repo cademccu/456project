@@ -43,7 +43,7 @@ def decode_data(data):
     raw_values = raw_string.split("|")
     raw_values.pop()
 
-    # sanity check 
+    # sanity check
     if len(raw_values) != count:
         print("Something went wrong!")
         print("count:      ", count)
@@ -57,9 +57,18 @@ def decode_data(data):
     return count, pairs
 
 
-
+#When a thread has been created, immediately runs here
 def threadedConnection(connection, address):
     print(connnection, address)
+
+    count, pairs = decode_data(connection.recieve(1024))
+    print(count, pairs)
+
+    #LAST FILE IN CHAINGANG
+    if count == 0:
+        os.system("wget")
+
+
 
 
 # Main method
