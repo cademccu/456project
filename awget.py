@@ -164,15 +164,12 @@ def main():
     '''
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as out_socket:
         # connect with host name and port
-        print(pair)
         out_socket.connect((pair[0], int(pair[1])))
         # send all the data
         out_socket.sendall(b_chains)
 
 
-        # time to wait for replies
-        #b_data = out_socket.recv(1024)
-
+        # wait for file now
         while True:
                 b_data = out_socket.recv(1024)
 
@@ -188,59 +185,9 @@ def main():
                     break
 
 
-
         # close socket
     out_socket.close()
     out_file.close()
-
-    
-    # open up the file as write to binary
-    # out_file = open(get_filename(), "wb")
-
-
-    '''
-    This socket binds itself to the host and port it just sent the
-    outgoing data to. When it gets a connection, it loops over the
-    connection recieving the data until the connection is done. While
-    doing this, it writes the recieved data to the file named after the
-    url input. After this is done, the resulting file should be complete.
-    '''
-    '''
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as in_socket:
-    #with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as in_socket:
-        # bind the socket to the incoming host
-        #in_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        #in_socket.bind((pair[0], int(pair[1])))
-        # set to listening mode
-        #in_socket.listen()
-        #print("listening...")
-        #conn, addr = in_socket.accept()
-        # using the connection, read the file
-        #with conn:
-
-            #while True:
-                #b_data = conn.recv(1024)
-
-                # loop while b_data is still populated
-                #while(b_data):
-                    # write data to file
-                    #out_file.write(b_data)
-                    # get new data
-                    #b_data = conn.recv(1024)
-
-                # break loop condition
-                #if not data:
-                    #break
-
-    # close up shtuff
-        #conn.close()
-    #socket.close()
-    out_file.close()
-    '''    
-
-
-
-
 
     if False: # debugging
         print("\n######### DEBUG #########")

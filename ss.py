@@ -124,16 +124,15 @@ def main():
     listen_socket.listen(1)
     # create while loop to wait around for connection
 
-    #while 1:
     c, addy = listen_socket.accept()
 
     test = c.recv(1024)
     print(test)
 
-        try:
-            _thread.start_new_thread(threadedConnection,(c,addy[0]))
-        except:
-            print("FUK")
+    try:
+        _thread.start_new_thread(threadedConnection,(c,addy[0]))
+    except:
+        print("FUK")
 
 
     # close socket
