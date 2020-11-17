@@ -23,6 +23,40 @@ def setup():
         sys.exit(-1)
 
 
+# This takes the payload of the packet that contains
+# the remaining chain list and decodes it into count
+# and list of values repectively. If count is zero,
+# returns None for pairs.
+# @returns count, pairs
+def decode_data(data):
+    # the first 2 bytes are the count
+    count = struct.unpack("h", data[:2])[0]
+
+    # check if count is 0, if so no more data!
+    if count == 0:
+        return 0, None
+
+    # unpack the rest into a string
+    raw_string = data[2:].decode("utf-8")
+
+    # split into list. Omit last value, empty element, My encoding adds additional '|'
+    raw_values = raw_string.split("|")
+    raw_values.pop()
+
+    # sanity check 
+    if len(raw_values) != count:
+        print("Something went wrong!")
+        print("count:      ", count)
+        print("raw_values: ", raw_values)
+
+    # create list of pairs from data
+    pairs = []
+    for pair in raw_values:
+        pairs.append(pair.split(","))
+
+    return count, pairs
+
+
 
 def threadedConnection(connection, address):
     print(connnection, address)
