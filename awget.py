@@ -99,6 +99,26 @@ def decode_data(data):
 
     return count, url, pairs
 
+# This is a helper method to get the filename from the provided
+# url string so a file with that name and extension can be 
+# opened and written to. 
+def get_filename():
+    # this is the default specified by directions lmao 
+    filename = "index.html"
+    
+    # index of last occuence for file name
+    index = URL.rfind("/")
+
+    # if not found, could just be a .com or somethin
+    if index < 0:
+        return filename
+
+    # clip just the filename
+    filename = URL[index+1:]
+    # TODO this could be more robust. Check for .com, etc?? idk
+    return filename
+
+
 
 # Main method
 def main():
@@ -128,22 +148,64 @@ def main():
     pair_index = random.randrange(len(chains.entries))
     pair = chains.entries[pair_index]
 
-    # open socket and send all the data.
+    '''
+    This socket is opened with the TCP protocol. It then procedes
+    to send the binary 'packet' created with sendall(), which loops
+    through calling send() until the data is done being sent over the 
+    socket. At this point, the socket is closed, as this part of the
+    process is over. A new socket will be opened to accept the incoming
+    file.
+    '''
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as out_socket:
         # connect with host name and port
         out_socket.connect((pair[0], int(pair[1])))
         # send all the data
         out_socket.sendall(b_chains)
         # close socket
-        out_socket.close()
-
-
-
-
-
-    # close socket
     out_socket.close()
 
+    # open up the file as write to binary
+    out_file = open(get_filename(), "wb")
+
+
+    '''
+    This socket binds itself to the host and port it just sent the 
+    outgoing data to. When it gets a connection, it loops over the 
+    connection recieving the data until the connection is done. While
+    doing this, it writes the recieved data to the file named after the
+    url input. After this is done, the resulting file should be complete.
+    '''
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as in_socket:
+        # bind the socket to the incoming host
+        in_socket.bind((pair[0], int(pair[1])))
+        # set to listening mode
+        in_socket.listen()
+        # accept the connection when it is made
+        print("listening...")
+        conn, addr = in_socket.accept()
+
+        # using the connection, read the file
+        with conn:
+
+            while True:
+                b_data = conn.recv(1024)
+
+                # loop while b_data is still populated
+                while(b_data):
+                    # write data to file
+                    out_file.write(b_data)
+                    # get new data
+                    b_data = conn.recv(1024)
+
+                # break loop condition
+                if not data:
+                    break
+
+    # close up shtuff
+        conn.close()
+    socket.close()
+    out_file.close()
+                    
 
 
 
