@@ -2,7 +2,12 @@ import sys
 import re as regex
 import socket
 import random
-import threading
+import _thread
+import struct
+import sys
+import os
+
+
 
 def setup():
     global PORT
@@ -87,14 +92,20 @@ def encode_chains(count, url, pairs=None):
 
 #When a thread has been created, immediately runs here
 def threadedConnection(connection, address):
-    print(connnection, address)
 
-    count, url, pairs = decode_data(connection.recieve(1024))
+    count, url, pairs = decode_data(connection.recv(1024))
     print(count, ", ", url, ", ", pairs)
 
+
+
     #LAST FILE IN CHAINGANG
-    if count == 0:
-        os.system("wget")
+    if count == 1:
+        os.system("wget "+url)
+
+    else:
+        count-=1
+
+
 
 
 
@@ -103,15 +114,12 @@ def threadedConnection(connection, address):
 def main():
     setup()
 
-    print("ss {}, {}".format(socket.gethostname(), PORT))
+    print("ss {}, {}".format(socket.gethostbyname(socket.gethostname()), PORT))
 
     # TIME DO DO SOME SOCKET PROGRAMMING HELL YEEEE
     listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # bind to the host name and port
-    # listen_socket.bind((socket.gethostname(), int(PORT)))
-    # listen_socket.bind((socket.gethostbyname(socket.gethostname()), int(PORT)))
-    listen_socket.bind(("127.0.0.1", int(PORT)))
-
+    listen_socket.bind((socket.gethostbyname(socket.gethostname()), int(PORT)))
     # set socket into listen mode
     listen_socket.listen(1)
     # create while loop to wait around for connection
@@ -122,10 +130,10 @@ def main():
     test = c.recv(1024)
     print(test)
 
-    try:
-        thread.start_new_thread(threadedConnection,(c,addy))
-    except:
-        print("YOU DID SOMETIN WRONG BOI")
+        try:
+            _thread.start_new_thread(threadedConnection,(c,addy[0]))
+        except:
+            print("FUK")
 
 
     # close socket
