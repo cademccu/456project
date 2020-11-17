@@ -46,6 +46,7 @@ def decode_data(data):
     if len(raw_values) != count:
         print("Something went wrong!")
         print("count:      ", count)
+        print("url:        ", url)
         print("raw_values: ", raw_values)
 
     # create list of pairs from data
@@ -55,6 +56,31 @@ def decode_data(data):
 
     return count, url, pairs
 
+# This encodes the count, remaining chainlist (if any), and url to be gotten into
+# a binary object.
+# count - an integer count of number of pairs left in chainlist
+# url - the name of the file or url to be fetched
+# pairs - the list of lists of pairs remaining
+# @returns a binary string containing the encoded data
+def encode_chains(count, url, pairs=None):
+    # pack the count of <address, port> pairs
+    b_count = struct.pack("h", count)
+
+    # if count is 0, don't encode list.
+    if count == 0:
+        return b_count + url.encode("utf-8")
+
+    b_string = ""
+    for s in pairs:
+        b_string = b_string + s[0] + "," + s[1] + "|"
+
+    # encode to bytes
+    b_string = b_string.encode("utf-8")
+
+    # add url as last member of the list
+    return b_count + b_string + url.encode("utf-8")
+    # not_needed_but_example = struct.pack(str(len(b_string)) + "s", b_string)
+
 
 
 
@@ -63,8 +89,8 @@ def decode_data(data):
 def threadedConnection(connection, address):
     print(connnection, address)
 
-    count, pairs = decode_data(connection.recieve(1024))
-    print(count, pairs)
+    count, url, pairs = decode_data(connection.recieve(1024))
+    print(count, ", ", url, ", ", pairs)
 
     #LAST FILE IN CHAINGANG
     if count == 0:

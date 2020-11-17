@@ -51,6 +51,10 @@ def encode_chains(chains):
     # pack the count of <address, port> pairs
     b_count = struct.pack("h", int(chains.num_entries))
 
+    # if count zero, no need to do anything on null list!
+    if int(chains.num_entries) == 0:
+        return b_count + URL.encode("utf-8")
+
     b_string = ""
     for s in chains.entries:
         b_string = b_string + s[0] + "," + s[1] + "|"
@@ -113,12 +117,6 @@ def main():
     # get binary representation of chains file
     b_chains = encode_chains(chains)
 
-    print(b_chains)
-    count, pairs, url = decode_data(b_chains)
-    print(count)
-    print(pairs)
-    print(url)
-
     # output section
     print("awget:")
     print("\tRequest: ", URL)
@@ -152,7 +150,12 @@ def main():
         print("filename: ", chainfilename)
         print("Number of entries: ", chains.num_entries)
         print("entry list: ", chains.entries)
-
+        print("------ test decode ------")
+        print(b_chains)
+        count, pairs, url = decode_data(b_chains)
+        print(count)
+        print(pairs)
+        print(url)
 
         print("#########################\n")
 
