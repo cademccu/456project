@@ -45,7 +45,8 @@ def setup():
 # The 'packet' can then be unpacked by using '.decode' on
 # this part of the actual packet, reading the count into
 # a python integer, and through 2 series of '.split'
-# retrieve the rest of the list.
+# retrieve the rest of the list. The last item of the 
+# unoacked list will be the URL
 def encode_chains(chains):
     # pack the count of <address, port> pairs
     b_count = struct.pack("h", int(chains.num_entries))
@@ -57,28 +58,29 @@ def encode_chains(chains):
     # encode to bytes
     b_string = b_string.encode("utf-8")
 
-    return b_count + b_string
+    # add url as last member of the list
+    return b_count + b_string + URL.encode("utf-8")
     # not_needed_but_example = struct.pack(str(len(b_string)) + "s", b_string)
 
 # This takes the payload of the packet that contains
 # the remaining chain list and decodes it into count
 # and list of values repectively. If count is zero,
 # returns None for pairs.
-# @returns count, pairs
+# @returns count, url, pairs
 def decode_data(data):
     # the first 2 bytes are the count
     count = struct.unpack("h", data[:2])[0]
 
     # check if count is 0, if so no more data!
     if count == 0:
-        return 0, None
+        return 0, data[2:].decode("utf-8"), None
 
     # unpack the rest into a string
     raw_string = data[2:].decode("utf-8")
 
     # split into list. Omit last value, empty element, My encoding adds additional '|'
     raw_values = raw_string.split("|")
-    raw_values.pop()
+    url = raw_values.pop()
 
     # sanity check
     if len(raw_values) != count:
@@ -91,7 +93,7 @@ def decode_data(data):
     for pair in raw_values:
         pairs.append(pair.split(","))
 
-    return count, pairs
+    return count, url, pairs
 
 
 # Main method
@@ -110,6 +112,12 @@ def main():
 
     # get binary representation of chains file
     b_chains = encode_chains(chains)
+
+    print(b_chains)
+    count, pairs, url = decode_data(b_chains)
+    print(count)
+    print(pairs)
+    print(url)
 
     # output section
     print("awget:")
