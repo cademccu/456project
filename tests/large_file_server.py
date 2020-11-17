@@ -1,0 +1,35 @@
+import socket
+
+HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
+PORT = 65432        # Port to listen on (non-privileged ports are > 1023)
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.bind((HOST, PORT))
+    s.listen()
+    conn, addr = s.accept()
+    with conn:
+        print('Connected by', addr)
+
+        # open up file to write to
+        bee_out = open("bee_out.txt", "wb")
+
+        # okay, money time. actually get the first bytes
+        while True:
+            data = conn.recv(1024)
+            # loop over whether recv returned anything
+            while(data):
+                # write into file
+                bee_out.write(data)
+                data = conn.recv(1024)
+            if not data:
+                break
+
+
+
+        bee_out.close()
+    conn.close()
+s.close()
+
+            #if not data:
+             #   break
+            #conn.sendall(data)
