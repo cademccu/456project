@@ -128,12 +128,16 @@ def main():
     pair_index = random.randrange(len(chains.entries))
     pair = chains.entries[pair_index]
 
-    # TIME DO DO SOME SOCKET PROGRAMMING HELL YEEEE
-    out_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # bind to the host name and port
-    out_socket.bind((socket.gethostname(), int(pair[1])))
-    # set socket into listen mode
-    out_socket.listen(1)
+    # open socket and send all the data.
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as out_socket:
+        # connect with host name and port
+        out_socket.connect((pair[0], int(pair[1])))
+        # send all the data
+        out_socket.sendall(b_chains)
+        # close socket
+        out_socket.close()
+
+
 
 
 
