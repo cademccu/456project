@@ -3,6 +3,7 @@ import re as regex
 import socket
 import random
 import _thread
+import threading
 import time
 import struct
 import sys
@@ -109,8 +110,6 @@ def relayFile(c,fn):
 
     # after we transmit the file, we need to delete it.
     file.close()
-    # delete file by name
-    os.remove(fn)
 
     c.shutdown(socket.SHUT_WR)
     c.close()
@@ -178,9 +177,13 @@ def threadedConnection(connection, address,ip):
         nextSS.close()
 
 
-    print("Relaying File ...")
+    print("\tRelaying File ...")
     relayFile(connection,filename)
-    print("Goodbye!")
+    print("\tGoodbye!")
+
+    # delete file by name
+    print("DELETING FILE ___________________________________")
+    os.remove(filename)
 
 
 # Main method
@@ -201,14 +204,14 @@ def main():
     while 1:
         c, addy = listen_socket.accept()
 
-        try:
-            t = threading.Thread(target = threadedConnection, args = (c,addy[0],ip))
-            t.start()
-            t.join()
-        except:
-            print("Threading Error")
+        #try:
+        t = threading.Thread(target = threadedConnection, args = (c,addy[0],ip))
+        t.start()
+        t.join()
+        #except:
+        #print("Threading Error")
 
-    time.sleep(3)
+    #time.sleep(3)
     # close socket
     listen_socket.close()
 
