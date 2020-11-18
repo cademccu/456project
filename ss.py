@@ -101,7 +101,17 @@ def relayFile(c,fn):
         c.send(reading)
         reading = file.read(1024)
 
+    ''' in case above works weird:
+    file = open(fn, rb)
+    reading = file.read()
+    c.sendall(reading) # calls send until sent
+    '''
+
+    # after we transmit the file, we need to delete it.
     file.close()
+    # delete file by name
+    os.remove(fn)
+
     c.shutdown(socket.SHUT_WR)
     c.close()
 
@@ -142,14 +152,27 @@ def threadedConnection(connection, address,ip):
 
             encodedData = encode_chains(count,url,pairs)
 
-            nextSS.send(encodedData)
+            nextSS.sendall(encodedData)
 
             #NOW WAIT FOR RECIEVED FILE
 
-            ###TODO
-            ###
-            ###
+            b_file = open(filename, "wb")
 
+            while True:
+                # get first chunk of data
+                b_data = nextSS.recv(1024)
+                # Now loop until the file is returned
+                while (b_data):
+                    # append to file
+                    b_file.write(b_data)
+                    # get next chunk
+                    b_data = nextSS.recv(1024)
+                # break condition
+                if not b_data:
+                    break
+
+            # close file, pass name to function
+            b_file.close()
 
             print("File received")
         nextSS.close()
