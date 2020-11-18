@@ -7,6 +7,7 @@ import time
 import struct
 import sys
 import os
+import random
 
 
 
@@ -87,28 +88,76 @@ def encode_chains(count, url, pairs=None):
     return b_count + b_string + url.encode("utf-8")
     # not_needed_but_example = struct.pack(str(len(b_string)) + "s", b_string)
 
+#FILE NAME PARSER, Modified from GetHowStuff
+def parseFN(url):
+    return url[url.rfind("/")+1:len(url)]
 
+
+def relayFile(c,fn):
+
+    file = open(fn,'rb')
+    reading = file.read(1024)
+    while reading:
+        c.send(reading)
+        reading = file.read(1024)
+
+    file.close()
+    c.shutdown(socket.SHUT_WR)
+    c.close()
 
 
 
 #When a thread has been created, immediately runs here
-def threadedConnection(connection, address):
+def threadedConnection(connection, address,ip):
 
     count, url, pairs = decode_data(connection.recv(1024))
-    print(count, ", ", url, ", ", pairs)
+    print("\tRequest: ",url)
 
+    pairs.remove([ip,PORT])
 
+    for pair in pairs:
+        print("\t"+pair[0]+", "+pair[1])
+
+    filename = parseFN(url)
 
     #LAST FILE IN CHAINGANG
     if count == 1:
-        os.system("wget "+url)
+        print("\tchainlist is empty")
+        print("\tissuing wget for file "+url+"\n..")
+        os.system("wget "+url+" >/dev/null 2>&1")
 
+    #OTHERWISE, REMOVE THIS SS and CONTIUE TO NEXT SS
     else:
         count-=1
 
+        randSS = random.choice(pairs)
+        print("\tnext SS is "+randSS[0]+", "+randSS[1]+"\n\twaiting for file...\n..")
+
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as nextSS:
+            try:
+                nextSS.connect((randSS[0],int(randSS[1])))
+            except:
+                print("Connection Refused")
+                sys.exit()
+
+            encodedData = encode_chains(count,url,pairs)
+
+            nextSS.send(encodedData)
+
+            #NOW WAIT FOR RECIEVED FILE
+
+            ###TODO
+            ###
+            ###
 
 
+            print("File received")
+        nextSS.close()
 
+
+    print("Relaying File ...")
+    relayFile(connection,filename)
+    print("Goodbye!")
 
 
 # Main method
@@ -117,23 +166,24 @@ def main():
 
     print("ss {}, {}".format(socket.gethostbyname(socket.gethostname()), PORT))
 
+    ip = socket.gethostbyname(socket.gethostname())
     # TIME DO DO SOME SOCKET PROGRAMMING HELL YEEEE
     listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # bind to the host name and port
-    listen_socket.bind((socket.gethostbyname(socket.gethostname()), int(PORT)))
+    listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    listen_socket.bind((ip, int(PORT)))
     # set socket into listen mode
     listen_socket.listen(1)
     # create while loop to wait around for connection
+    while 1:
+        c, addy = listen_socket.accept()
 
-    c, addy = listen_socket.accept()
-
-    test = c.recv(1024)
-    print(test)
-
-    try:
-        _thread.start_new_thread(threadedConnection,(c,addy[0]))
-    except:
-        print("FUK")
+        try:
+            t = threading.Thread(target = threadedConnection, args = (c,addy[0],ip))
+            t.start()
+            t.join()
+        except:
+            print("Threading Error")
 
     time.sleep(3)
     # close socket
