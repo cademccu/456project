@@ -91,16 +91,19 @@ def encode_chains(count, url, pairs=None):
 
 #FILE NAME PARSER, Modified from GetHowStuff
 def parseFN(url):
+    if(url.rfind("/") < 0):
+        return "index.html"
+
     return url[url.rfind("/")+1:len(url)]
 
 
 def relayFile(c,fn):
 
-    file = open(fn,'rb')
-    reading = file.read(1024)
+    filey = open(fn,'rb')
+    reading = filey.read(1024)
     while reading:
         c.send(reading)
-        reading = file.read(1024)
+        reading = filey.read(1024)
 
     ''' in case above works weird:
     file = open(fn, rb)
@@ -109,7 +112,7 @@ def relayFile(c,fn):
     '''
 
     # after we transmit the file, we need to delete it.
-    file.close()
+    filey.close()
 
     c.shutdown(socket.SHUT_WR)
     c.close()
@@ -173,16 +176,15 @@ def threadedConnection(connection, address,ip):
             # close file, pass name to function
             b_file.close()
 
-            print("File received")
+
         nextSS.close()
 
-
+    print("\tFile received")
     print("\tRelaying File ...")
     relayFile(connection,filename)
     print("\tGoodbye!")
 
     # delete file by name
-    print("DELETING FILE ___________________________________")
     os.remove(filename)
 
 

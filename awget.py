@@ -147,11 +147,15 @@ def main():
     # get a random number in the apropriate range
     pair_index = random.randrange(len(chains.entries))
     pair = chains.entries[pair_index]
-
+    print("\tnext SS is "+pair[0]+", "+pair[1])
+    print("\t waiting for file...")
+    print("..")
 
      # open up the file as write to binary
     out_file = open(get_filename(), "wb")
 
+    print("\tRecieved file "+get_filename())
+    print("\tGoodbye")
 
 
     '''
