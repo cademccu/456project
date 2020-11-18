@@ -3,6 +3,7 @@ import re as regex
 import socket
 import random
 import _thread
+import time
 import struct
 import sys
 import os
@@ -134,7 +135,7 @@ def main():
     except:
         print("FUK")
 
-
+    time.sleep(3)
     # close socket
     listen_socket.close()
 
