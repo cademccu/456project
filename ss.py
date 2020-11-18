@@ -24,7 +24,7 @@ def setup():
         print("Port was outside of allowed port range. Exiting...")
         sys.exit(-1)
     elif len(sys.argv) == 1:
-        PORT = 888
+        PORT = 20000
         return
     else:
         print("\nUSAGE\n\tpython3 ss.py -p <PORT>\n\t\t<PORT> - (Optional) Allowed port number.\n")

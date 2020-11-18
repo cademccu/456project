@@ -11,4 +11,9 @@ stones to anonymously traverse a network.
 
 
 === Usage ===
+AWGET:
+python3 awget.py <FILE> -c <CHAINFILE>
 
+SS: Default Port is 20000
+python3 ss.py -p <PORT>
+python3 ss.py                  (Using port 20000)
